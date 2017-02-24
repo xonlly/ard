@@ -1,0 +1,13 @@
+{
+    "presets": ["es2015", "stage-1", "react"],
+
+    "plugins": [
+        [ "./script/babel-plugin-require-absolute.js", { "moduleDirectory": [ "./vendors", "./node_modules", "./front" ] } ],
+        "transform-async-to-generator"
+    ],
+
+    "ignore": [
+        "node_modules/**/*.js",
+        "build/**/*.js",
+    ]
+}
