@@ -3,7 +3,8 @@
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 
-import Chip from 'material-ui/Chip';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 navigator.getUserMedia =
     navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
@@ -46,9 +47,10 @@ export default class Webcam extends Component {
 
         this.state = {
             src : null,
+            selected : false,
             videoSource : false,
             audioSource : false,
-            screenshotFormat : 'image/webp',
+            screenshotFormat : 'image/jpeg',
             devices : [],
         }
     }
@@ -103,7 +105,9 @@ export default class Webcam extends Component {
         return nextState.src != this.state.src
             || nextState.devices.length != this.state.devices.length
             || nextState.videoSource
+            || nextState.videoSource != this.state.videoSource
             || nextState.audioSource
+            || nextState.selected != this.state.selected
     }
 
     componentWillUnmount() {
@@ -113,29 +117,36 @@ export default class Webcam extends Component {
     render() {
 
 
-        const { src, devices } = this.state
-
+        const { src, devices, selected } = this.state
 
         return (
             <div>
-                <div className="list-video">
-                    {
-                        devices.filter( x => x.kind == 'videoinput' ).map( x =>
-                            <Chip
+                <DropDownMenu
+                    value={ selected }
+                    onChange={ (event, index, value) => !value
+                        ? this.setState({ selected : false, videoSource : false, src : null })
+                        : this.setState({ selected : value, videoSource : devices.find( x => x.deviceId == value ) })
+                    }
+                    openImmediately={true}>
+                        <MenuItem value={ false } primaryText="Select a camera" />
+                        { devices.filter( x => x.kind == 'videoinput' ).map( x =>
+                            <MenuItem
                                 key={ x.deviceId }
-                                backgroundColor={'#691b19'}
-                                labelColor="white"
-                                onTouchTap={ () => this.setState({ videoSource : x }) }
-                                >{ x.label }</Chip>
+                                value={ x.deviceId }
+                                primaryText={ x.label }
+                                />
                         )
                     }
+                </DropDownMenu>
+                { selected && <div>
+                    <video
+                        ref="video"
+                        autoPlay
+                        src={ src }
+                        />
+                    <canvas style={ { display: 'none' } } ref="canvas" />
                 </div>
-                <video
-                    ref="video"
-                    autoPlay
-                    src={ src }
-                    />
-                <canvas ref="canvas" />
+                    }
             </div>
         )
     }

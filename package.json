@@ -28,17 +28,18 @@
   "scripts": {
     "start": "webpack-dev-server --port 14246 --inline --devtool source-map --content-base ./ -d",
     "serve": "node -e \"require('babel-register');require('./script/devServer')\"",
-    "build:server": "rm -rf build && babel --out-dir build/server --ignore node_modules/**/*.js,script/*.js,lib/**/*.js server",
-    "build:front": "rm -rf build && babel --out-dir build/front --ignore node_modules/**/*.js,script/*.js,lib/**/*.js front",
+    "build:server": "rm -rf build && babel --out-dir buildServer --ignore node_modules/**/*.js,script/*.js,lib/**/*.js server",
+    "build:front": "rm -rf build && babel --out-dir buildFront --ignore node_modules/**/*.js,script/*.js,lib/**/*.js front",
     "build:watch:server": "yarn build:server -- --watch",
     "build:watch:front": "yarn build:front -- --watch",
-    "start:server": "node build/server/index.js",
-    "start:front": "node build/front/index.js"
+    "start:server": "node buildServer/index.js",
+    "start:front": "node buildFront/index.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "express": "^4.14.1",
     "material-ui": "^0.17.0",
+    "node-openalpr": "^1.1.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",

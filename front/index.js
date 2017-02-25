@@ -14,7 +14,7 @@ init(
     reducerFragment,
     {
         ui                  : require('system/ui')( config.ui ),
-        // live                : require('system/live')( config.live ),
+        live                : require('system/live')( config.live ),
     }
 )
     .then( x => {
