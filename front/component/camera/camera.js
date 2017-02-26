@@ -1,30 +1,46 @@
 
-import React from 'react'
-import Webcam from './webcamv2';
-import Card from 'material-ui/Card';
+import React    from 'react'
+import Webcam   from './webcamv2';
+import Card     from 'material-ui/Card';
+import Display  from './display'
+
 // import CardHeader from 'material-ui/CardHeader'
-import CardTitle from 'material-ui/Card/CardTitle'
-import CardText from 'material-ui/Card/CardText'
+import CardTitle      from 'material-ui/Card/CardTitle'
+import CardText       from 'material-ui/Card/CardText'
+import LinearProgress from 'material-ui/LinearProgress';
+import Paper          from 'material-ui/Paper';
 
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
-const Camera = ({ screenshot, stats, list }) => {
+const style = {
+  height: 600,
+  width: 'calc( 50% - 40px )',
+  margin: 15,
+  display: 'inline-block',
+  verticalAlign: 'top',
+  overflow: 'auto',
+};
 
-/*
-    stats.processing_time_ms
-    stats.regions_of_interest
-    stats.results
-*/
+const plateStr = ( x ) => {
+    const a = x.split('')
+    return `${a[0]}${a[1]}-${a[2]}${a[3]}${a[4]}-${a[5]}${a[6]}`
+}
 
+const Camera = ({ screenshot, setSize, size, stats, list }) => {
     return (
         <div>
-            { stats.results && stats.results.map( (x, i) => <Card key={ i }>
+            <Paper style={ { ...style, width : 'calc( 60% - 30px )', height : size.height + 70, overflow : 'hidden', backgroundColor: 'rgb(0, 188, 212)' }}>
+                <Webcam keyScreenshot={ stats.epoch_time ? stats.epoch_time : 1 } onData={ screenshot } videoSize={ s => setSize( s ) }>
+                    <Display width={ size.width } height={ size.height } list={ stats.results ? stats.results.map( x => x.coordinates ) : [] } />
+                </Webcam>
+            </Paper>
+
+            <Paper style={{ ...style, width : 'calc( 40% - 30px )' }}>
+                { stats.results && stats.results.map( (x, i) => <Card key={ i }>
                     <CardTitle>{ x.plate }</CardTitle>
                     <CardText>{ 'Confidence: '+x.confidence}</CardText>
-                    <CardText>{ 'Coordinates: '+JSON.stringify( x.coordinates ) }</CardText>
-            </Card> )}
-            <Webcam onData={ screenshot } />
-
+                </Card> )}
+            </Paper>
 
             <Table>
                 <TableHeader>
@@ -32,15 +48,13 @@ const Camera = ({ screenshot, stats, list }) => {
                         <TableHeaderColumn>Count</TableHeaderColumn>
                         <TableHeaderColumn>Plaque</TableHeaderColumn>
                         <TableHeaderColumn>Confidence</TableHeaderColumn>
-                        <TableHeaderColumn>Coordinates</TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     { list.map( x => <TableRow key={ x.plate }>
                         <TableRowColumn>{x.count}</TableRowColumn>
-                        <TableRowColumn>{x.plate}</TableRowColumn>
-                        <TableRowColumn>{x.confidence}</TableRowColumn>
-                        <TableRowColumn>{JSON.stringify( x.coordinates )}</TableRowColumn>
+                        <TableRowColumn>{plateStr( x.plate )}</TableRowColumn>
+                        <TableRowColumn><LinearProgress mode="determinate" value={x.confidence} /></TableRowColumn>
                     </TableRow>) }
 
 

@@ -1,4 +1,6 @@
 
+import { hex } from 'util/color'
+
 export const list = ( stats, _list ) => {
 
     _list = _list || []
@@ -10,7 +12,7 @@ export const list = ( stats, _list ) => {
                 .map( l => l.plate == x.plate ? { ...l, count : l.count + 1 } : l )
 
             if ( !_list.some( l => l.plate == x.plate ) ) {
-                _list.push( { ...x, count : 1 } )
+                _list.push( { ...x, count : 1, color : hex() } )
             }
 
         } )
