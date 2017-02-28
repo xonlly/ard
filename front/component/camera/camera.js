@@ -1,10 +1,10 @@
 
 import React    from 'react'
 import Webcam   from './webcamv2';
-import Card     from 'material-ui/Card';
 import Display  from './display'
 
 // import CardHeader from 'material-ui/CardHeader'
+import Card           from 'material-ui/Card';
 import CardTitle      from 'material-ui/Card/CardTitle'
 import CardText       from 'material-ui/Card/CardText'
 import LinearProgress from 'material-ui/LinearProgress';
@@ -29,7 +29,7 @@ const plateStr = ( x ) => {
 const Camera = ({ screenshot, setSize, size, stats, list }) => {
     return (
         <div>
-            <Paper style={ { ...style, width : 'calc( 60% - 30px )', height : size.height + 70, overflow : 'hidden', backgroundColor: 'rgb(0, 188, 212)' }}>
+            <Paper style={ { ...style, width : 'calc( 60% - 30px )', height :'1000px', overflow : 'auto', backgroundColor: 'rgb(0, 188, 212)' }}>
                 <Webcam keyScreenshot={ stats.epoch_time ? stats.epoch_time : 1 } onData={ screenshot } videoSize={ s => setSize( s ) }>
                     <Display width={ size.width } height={ size.height } list={ stats.results ? stats.results.map( x => x.coordinates ) : [] } />
                 </Webcam>

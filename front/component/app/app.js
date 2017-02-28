@@ -4,7 +4,7 @@ import React from 'react'
 
 import AppBar from 'material-ui/AppBar';
 
-import Camera from 'component/camera'
+import Camera from 'component/cameraUI'
 
 const App = () => {
 
@@ -13,7 +13,7 @@ const App = () => {
         <div>
             <AppBar title="ARD"  />
 
-        <Camera />
+            <Camera />
         </div>
     )
 }

@@ -1,10 +1,13 @@
-
+/* global tracking */
 
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+
+import Tracking from 'tracking'
+
 
 navigator.getUserMedia =
     navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
@@ -21,6 +24,8 @@ export default class Webcam extends Component {
 
         this.stream = false
 
+
+
         // this.interval = setInterval(() => this.takeScreenshot(), 2000);
 
         this.state = {
@@ -30,6 +35,7 @@ export default class Webcam extends Component {
             audioSource : false,
             screenshotFormat : 'image/jpeg',
             devices : [],
+            list_pictures : [],
         }
     }
 
@@ -43,25 +49,38 @@ export default class Webcam extends Component {
 
         const { videoSize } = this.props
 
-
-
         const ratio = video.videoWidth / video.videoHeight
 
-        canvas.width = video.clientWidth
-        canvas.height = video.clientWidth / ratio
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight / ratio
 
+
+/*
         if ( videoSize ) {
             videoSize({ width : canvas.width, height : canvas.height })
         }
+*/
 
-        const ctx = canvas.getContext('2d')
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const { screenshotFormat } = this.state
         const { onData } = this.props
 
-        onData && onData( canvas.toDataURL( screenshotFormat ) )
+        const list_pictures = []
+        this.state.tracking.forEach( elem => {
+
+            const ctx = canvas.getContext('2d')
+
+            ctx.drawImage(video, elem.x, elem.y, elem.width, elem.height);
+
+            list_pictures.push( canvas.toDataURL( screenshotFormat ) )
+
+        })
+
+        console.log({list_pictures})
+
+        this.setState({ list_pictures })
+        // onData && onData(  )
 
     }
 
@@ -72,6 +91,32 @@ export default class Webcam extends Component {
                 this.setState({ devices })
             })
 
+
+
+    }
+
+    startTracker() {
+        const video = findDOMNode(this.refs.video)
+
+        console.log('Tracking', tracking)
+
+        tracking.ColorTracker.registerColor('purple', function(r, g, b) {
+            var dx = r - 255;
+            var dy = g - 255;
+            var dz = b - 255;
+            if ((b - g) >= 100 && (r - g) >= 60) {
+              return true;
+            }
+            return dx * dx + dy * dy + dz * dz < 3500;
+        });
+
+        const tracker = new tracking.ColorTracker(['purple']);
+
+        tracking.track(video, tracker, { camera: true });
+
+        tracker.on('track', event => {
+            this.setState({ tracking : event.data })
+        })
     }
 
     componentWillUpdate( nextProps, nextState ) {
@@ -93,7 +138,13 @@ export default class Webcam extends Component {
 
         // Premier screen apres le stream video
         if ( videoSource ) {
-            setTimeout( () => this.takeScreenshot(), 2000 )
+
+            setTimeout( () => {
+                this.startTracker()
+
+            }, 2000 )
+
+            setInterval(() => this.takeScreenshot(), 4000)
         }
 
         const constraints = {}
@@ -141,10 +192,14 @@ export default class Webcam extends Component {
     render() {
 
 
-        const { src, devices, selected } = this.state
+        const { src, devices, selected, list_pictures } = this.state
 
         return (
             <div>
+
+                <div style={{display: 'flex'}}>
+                    { list_pictures.map( (e, i) => <img key={i} src={e}  /> ) }
+                </div>
                 <div style={{ height : '70px' }}>
                     <DropDownMenu
                         value={ selected }
@@ -165,15 +220,17 @@ export default class Webcam extends Component {
                     </DropDownMenu>
                 </div>
                 { selected && <div style={{ position: 'relative' }}>
+
                     <video
                         ref="video"
                         autoPlay
                         src={ src }
                         width="100%"
                         />
-                    <canvas style={ { display: 'none' } } ref="canvas" />
+                    <canvas ref="canvas" />
+
                     <div style={{ position : 'absolute', top: 0}}>
-                        { this.props.children }
+                        { React.cloneElement(this.props.children, { tracking : this.state.tracking }) }
                     </div>
                 </div>
                     }

@@ -8,6 +8,11 @@ import * as reducerFragment          from 'reducer'
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+
+// For camera
+navigator.getUserMedia =
+    navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
+
 injectTapEventPlugin();
 
 init(
@@ -15,6 +20,7 @@ init(
     {
         ui                  : require('system/ui')( config.ui ),
         live                : require('system/live')( config.live ),
+        camera                : require('system/camera')( config.camera ),
     }
 )
     .then( x => {

@@ -1,4 +1,4 @@
 
-export * from './pic'
-export * from './size'
+export * from './video'
+export * from './dom'
 export * as toSend from './toSend'

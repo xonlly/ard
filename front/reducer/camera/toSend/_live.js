@@ -15,4 +15,4 @@ export const _live = ( pic, _pic ) => {
 
 }
 
-_live.dependencies = ['camera.pic']
+_live.dependencies = []
