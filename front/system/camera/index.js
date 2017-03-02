@@ -3,6 +3,7 @@
 import Stats from 'stats.js'
 import 'tracking'
 
+
 module.exports = ( options = {} ) => {
 
     var readyVR = false
@@ -16,9 +17,9 @@ module.exports = ( options = {} ) => {
         const stats = new Stats()
 
         // TRACKER §!!
-        tracking.ColorTracker.registerColor('purple', function(r, g, b) {
-            var dx = r - 255;
-            var dy = g - 255;
+        tracking.ColorTracker.registerColor('b', function(r, g, b) {
+            var dx = r - 245;
+            var dy = g - 248;
             var dz = b - 255;
             if ((b - g) >= 100 && (r - g) >= 60) {
               return true;
@@ -26,12 +27,12 @@ module.exports = ( options = {} ) => {
             return dx * dx + dy * dy + dz * dz < 3500;
         });
 
-        const tracker = new tracking.ColorTracker(['purple']);
+        const tracker = new tracking.ColorTracker(['b']);
 
         tracking.track(video, tracker, { camera: true });
 
         tracker.on('track', event => {
-            tracked = event.data
+            tracked = event.data.filter( x => x.width > 400 && x.height > 300)
         })
         // TRACKER §!!
 
@@ -55,10 +56,20 @@ module.exports = ( options = {} ) => {
             stats.begin();
 
             // VR
-            canvasVR.width = video.clientWidth
-            canvasVR.height = video.clientHeight
 
 
+            tracked.forEach( elem => {
+                ctxVr.beginPath();
+                ctxVr.strokeStyle="purple";
+                /*ctxVr.moveTo(elem.x, elem.y);
+                ctxVr.lineTo(elem.x + elem.width, elem.y);
+                ctxVr.lineTo(elem.x + elem.width, elem.y + elem.height);
+                ctxVr.lineTo(elem.x, elem.y + elem.height);
+                ctxVr.lineTo(elem.x, elem.y);*/
+
+                ctxVr.fillRect(elem.x, elem.y, elem.width, elem.height)
+                ctxVr.stroke();
+            })
 
             // ctxVr.drawImage( video, 0, 0, video.clientWidth, video.clientHeight )
 
@@ -73,6 +84,10 @@ module.exports = ( options = {} ) => {
         requestAnimationFrame( animate );
 
         setInterval( () => {
+
+            canvasVR.width = video.clientWidth
+            canvasVR.height = video.clientHeight
+
             const imgs = tracked.map( elem => {
                 return '<img src="'+getData( elem.x, elem.y, elem.width, elem.height )+'" />'
             })
@@ -88,16 +103,11 @@ module.exports = ( options = {} ) => {
         store.watchAndCallImmediately( 'camera.dom', 'camera.device', 'camera.resolution', ( doms, device, resolution ) => {
 
             if ( !readyVR ) {
-                VR({ doms })
                 readyVR = true
+                VR({ doms })
             }
 
-            const { canvasScreen, canvasVR, video } = doms
-
             if ( device ) {
-
-                console.log({resolution})
-
                 const constraints = {
                     video : {
                         // width: resolution,
@@ -106,17 +116,12 @@ module.exports = ( options = {} ) => {
                 }
 
                 navigator.getUserMedia( constraints, stream => {
-
-                    video.src = window.URL.createObjectURL(stream)
-
+                    store.dispatch({ type : 'ask-camera:src', payload : window.URL.createObjectURL(stream) })
                 }, error => { console.log({ error })})
 
             } else {
-                // remove source
-                video.src = false
+                store.dispatch({ type : 'ask-camera:src', payload : false })
             }
-
-            console.log({ doms, device, resolution })
 
         })
 

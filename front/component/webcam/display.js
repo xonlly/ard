@@ -44,8 +44,8 @@ export default class Display extends Component {
                 <video
                     ref="video"
                     autoPlay
+                    controls
                     src={ src }
-
                     />
                 <canvas style={{ display: 'none' }} className="screen" ref="canvasScreen" />
             </div>

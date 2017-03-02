@@ -11,7 +11,6 @@ const App = () => {
 
     return (
         <div>
-            <AppBar title="ARD"  />
 
             <Camera />
         </div>

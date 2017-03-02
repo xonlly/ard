@@ -7,6 +7,7 @@ import {
     setDom,
     setDevice,
     setResolution,
+    setSrc,
 } from 'action/camera'
 
 export default connect(
@@ -33,7 +34,7 @@ export default connect(
         setDom : dom => dispatch( setDom( dom ) ),
         setDevice : device => dispatch( setDevice( device ) ),
         setResolution : resolution => dispatch( setResolution( resolution ) ),
-
+        setSrc : src => dispatch( setSrc( src ) ),
     }),
 
 

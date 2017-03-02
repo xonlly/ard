@@ -23,3 +23,8 @@ export const setResolution = resolution => ({
     type : 'ask-camera:resolution',
     payload : resolution,
 })
+
+export const setSrc = src => ({
+    type : 'ask-camera:src',
+    payload : src,
+})

@@ -21,6 +21,11 @@ export const Devices = ({ list, value, onChange }) => (
     </DropDownMenu>
 )
 
+
+export const File = ({ onChange }) => (
+    <input type="file" onChange={ function (e) { onChange.call( this ) } } accept="video/*" />
+)
+
 const resolutions = [
     320,
     640,
